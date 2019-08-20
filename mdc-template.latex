@@ -1,0 +1,173 @@
+%!TEX TS-program = pdflatex
+\documentclass[11pt, hidelinks, bookmark, article, oneside]{memoir}  
+
+% Fonts and typography
+\usepackage[utf8]{inputenc}
+\usepackage{CormorantGaramond}
+\usepackage[book]{FiraSans}
+\usepackage[T1]{fontenc}
+\usepackage[final]{microtype}
+\usepackage{xspace}
+\usepackage{textcomp}
+\usepackage{xcolor}
+
+% Symbols: 
+\usepackage{amsmath}
+
+% `babel`: 
+\usepackage[english]{babel}
+
+% Paragraph format:
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0.1em}
+
+% Title styling
+\setsecheadstyle{\huge\sffamily}
+\makeatletter
+\let\origsection\section
+\renewcommand\section{\@ifstar{\starsection}{\nostarsection}}
+\newcommand\nostarsection[1]{\sectionprelude\origsection{#1}\sectionpostlude}
+\newcommand\starsection[1]{\sectionprelude\origsection*{#1}\sectionpostlude}
+\newcommand\sectionprelude{\vspace{2em}}
+\newcommand\sectionpostlude{\vspace{-0.5em}}
+\makeatother
+\setsubsecheadstyle{\Large\sffamily}
+\makeatletter
+\let\origsubsection\subsection
+\renewcommand\subsection{\@ifstar{\starsubsection}{\nostarsubsection}}
+\newcommand\nostarsubsection[1]{\subsectionprelude\origsubsection{#1}\subsectionpostlude}
+\newcommand\starsubsection[1]{\subsectionprelude\origsubsection*{#1}\subsectionpostlude}
+\newcommand\subsectionprelude{\vspace{1em}}
+\newcommand\subsectionpostlude{\vspace{-0.5em}}
+\makeatother
+\setsubsubsecheadstyle{\sffamily\itshape}
+\makeatletter
+\let\origsubsubsection\subsubsection
+\renewcommand\subsubsection{\@ifstar{\starsubsubsection}{\nostarsubsubsection}}
+\newcommand\nostarsubsubsection[1]{\subsubsectionprelude\origsubsubsection{#1}\subsubsectionpostlude}
+\newcommand\starsubsubsection[1]{\subsubsectionprelude\origsubsubsection*{#1}\subsubsectionpostlude}
+\newcommand\subsubsectionprelude{\vspace{0.5em}}
+\newcommand\subsubsectionpostlude{\vspace{-0.5em}}
+\makeatother
+
+% Page format:
+\pagestyle{plain}  
+
+% Footnotes
+% if you have code in your footnotes, the million macro march 
+% kind of bumps into itself.
+% Pandoc, having just rendered your text into LaTeX, 
+% knows whether the 'variable' `verbatim-in-note` is True, and 
+% If it is, it asks for a  LaTeX package that solves the dilemma:
+$if(verbatim-in-note)$
+\usepackage{fancyvrb}
+$endif$
+
+% Lists formatting: 
+% note sure what 'fancy enums' are; something to do with lists, 
+% as the further comment suggests: 
+$if(fancy-enums)$
+% -- Redefine labelwidth for lists; otherwise, the enumerate package will cause
+% -- markers to extend beyond the left margin.
+\makeatletter\AtBeginDocument{%
+  \renewcommand{\@listi}
+    {\setlength{\labelwidth}{4em}}
+}\makeatother
+\usepackage{enumerate}
+$endif$
+
+% Table formatting: 
+$if(tables)$
+\usepackage{array}
+
+\newcommand{\PreserveBackslash}[1]{\let\temp=\\#1\let\\=\temp}
+\let\PBS=\PreserveBackslash
+
+$endif$
+
+
+% Subscripts:
+$if(subscript)$
+\newcommand{\textsubscr}[1]{\ensuremath{_{\scriptsize\textrm{#1}}}}
+$endif$
+
+
+% Web-style links:
+\usepackage[breaklinks=true]{hyperref}
+\hypersetup{colorlinks,%
+	citecolor=blue,%
+	filecolor=blue,%
+	linkcolor=blue,%
+	urlcolor=blue
+}
+$if(url)$
+\usepackage{url}
+$endif$
+
+
+
+% Images. 
+$if(graphics)$
+\usepackage{graphicx}
+% -- We will generate all images so they have a width \maxwidth. This means
+% -- that they will get their normal width if they fit onto the page, but
+% -- are scaled down if they would overflow the margins.
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+\else\Gin@nat@width\fi}
+\makeatother
+\let\Oldincludegraphics\includegraphics
+\renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\maxwidth]{#1}}
+$endif$
+
+% Section numbering.  
+$if(numbersections)$
+$else$
+\setcounter{secnumdepth}{0}
+$endif$
+
+% Footnotes: 
+$if(verbatim-in-note)$
+\VerbatimFootnotes % -- allows verbatim text in footnotes
+$endif$
+
+% Other stuff you specify on the command line:
+$for(header-includes)$
+$header-includes$
+$endfor$
+
+% Title, authors, date.
+$if(title)$
+\title{\Huge\sffamily $title$}
+\date{\sffamily \today}
+$endif$
+\author{\sffamily $for(author)$$author$$sep$\\$endfor$}
+$if(date)$
+\date{\sffamily $date$}
+$endif$
+
+\begin{document}
+
+
+$if(title)$
+\maketitle
+$endif$
+
+$if(toc)$
+\tableofcontents
+
+$endif$
+
+
+$if(alignment)$
+\begin{$alignment$}
+$endif$
+
+$body$
+
+%$if(alignment)$
+\end{$alignment$}
+$endif$
+
+
+\end{document}
